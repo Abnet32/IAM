@@ -12,12 +12,14 @@ import { CirclePlusIcon, MailIcon } from "lucide-react"
 
 export function NavMain({
   items,
+  activePath,
 }: {
   items: {
     title: string
     url: string
     icon?: React.ReactNode
   }[]
+  activePath?: string
 }) {
   return (
     <SidebarGroup>
@@ -28,8 +30,7 @@ export function NavMain({
               tooltip="Quick Create"
               className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
             >
-              <CirclePlusIcon
-              />
+              <CirclePlusIcon />
               <span>Quick Create</span>
             </SidebarMenuButton>
             <Button
@@ -37,8 +38,7 @@ export function NavMain({
               className="size-8 group-data-[collapsible=icon]:opacity-0"
               variant="outline"
             >
-              <MailIcon
-              />
+              <MailIcon />
               <span className="sr-only">Inbox</span>
             </Button>
           </SidebarMenuItem>
@@ -46,7 +46,11 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
+              <SidebarMenuButton
+                tooltip={item.title}
+                isActive={activePath === item.url}
+                render={<a href={item.url} />}
+              >
                 {item.icon}
                 <span>{item.title}</span>
               </SidebarMenuButton>
