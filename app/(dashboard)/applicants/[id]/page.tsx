@@ -156,7 +156,7 @@ export default function ApplicantDetailPage({
                 ))}
               </div>
               <Separator />
-              <div className="space-y-2">
+              <div className="flex flex-wrap gap-3">
                 {applicant.portfolioUrl && (
                   <a
                     href={applicant.portfolioUrl}
