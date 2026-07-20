@@ -12,7 +12,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -34,7 +33,6 @@ import {
   LogOut,
   User,
   Palette,
-  HelpCircle,
   ChevronsUpDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
