@@ -1,24 +1,18 @@
 "use client"
 
 import { useMemo } from "react"
-import { useDashboard, useApplicants } from "@/src/hooks/use-api"
+import { useDashboard } from "@/src/hooks/use-api"
 import { XCircle, Users, Clock, CheckCircle } from "lucide-react"
 import { DashboardWelcome } from "./_components/dashboard-welcome"
 import { DashboardStatsCard } from "./_components/dashboard-stats-card"
 import { ApplicationTrendsCard } from "./_components/dashboard-charts"
-import { RecentActivityTimeline } from "./_components/dashboard-activity"
+
 import { TopUniversitiesCard } from "./_components/dashboard-universities"
 import { HiringPipelineCard } from "./_components/dashboard-pipeline"
-import { generateTrendData, generateActivityData } from "./_components/dashboard-utils"
+import { generateTrendData } from "./_components/dashboard-utils"
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useDashboard()
-  const { data: applicantsData } = useApplicants({
-    page: 1,
-    limit: 5,
-    sortBy: "applicationDate",
-    sortOrder: "desc",
-  })
 
   const total = data?.totalApplicants ?? 0
   const pending = data?.byStatus?.pending ?? 0
@@ -36,17 +30,6 @@ export default function DashboardPage() {
   const sparkAccepted = useMemo(() => generateTrendData(accepted || 2, "daily").map((d) => d.count), [accepted])
   const sparkRejected = useMemo(() => generateTrendData(rejected || 1, "daily").map((d) => d.count), [rejected])
 
-  const activities = useMemo(() => {
-    const apps = applicantsData?.data ?? []
-    return generateActivityData(
-      apps.map((a) => ({
-        fullName: a.fullName,
-        status: a.status,
-        track: a.track,
-        applicationDate: a.applicationDate,
-      }))
-    )
-  }, [applicantsData])
 
   if (error) {
     return (
@@ -124,14 +107,12 @@ export default function DashboardPage() {
       <ApplicationTrendsCard total={total} isLoading={isLoading} />
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <RecentActivityTimeline activities={activities} isLoading={isLoading} />
         <TopUniversitiesCard total={total} isLoading={isLoading} />
+        <HiringPipelineCard
+          data={data ?? { totalApplicants: 0, byStatus: {}, byTrack: {} }}
+          isLoading={isLoading}
+        />
       </div>
-
-      <HiringPipelineCard
-        data={data ?? { totalApplicants: 0, byStatus: {}, byTrack: {} }}
-        isLoading={isLoading}
-      />
     </div>
   )
 }
