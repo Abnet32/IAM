@@ -5,13 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { DashboardSummary } from "@/src/types/api"
 
-const PIPELINE_STAGES = [
-  { key: "pending", label: "Applied", color: "bg-amber-500" },
-  { key: "shortlisted", label: "Screening", color: "bg-blue-500" },
-  { key: "accepted", label: "Interview", color: "bg-emerald-500" },
-  { key: "accepted", label: "Accepted", color: "bg-primary" },
-] as const
-
 export function HiringPipelineCard({
   data,
   isLoading = false,
@@ -21,7 +14,6 @@ export function HiringPipelineCard({
 }) {
   const stages = useMemo(() => {
     const total = data.totalApplicants || 1
-    const pending = data.byStatus.pending ?? 0
     const shortlisted = data.byStatus.shortlisted ?? 0
     const accepted = data.byStatus.accepted ?? 0
     const rejected = data.byStatus.rejected ?? 0
@@ -84,7 +76,7 @@ export function HiringPipelineCard({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {stages.map((stage, i) => (
+          {stages.map((stage) => (
             <div key={stage.label} className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
