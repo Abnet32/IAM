@@ -17,13 +17,8 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  Tooltip,
 } from "recharts"
-import { generateTrendData, STATUS_COLORS, STATUS_LABELS } from "./dashboard-utils"
+import { generateTrendData } from "./dashboard-utils"
 
 const trendChartConfig = {
   count: { label: "Applications", color: "var(--chart-4)" },
@@ -128,114 +123,6 @@ export function ApplicationTrendsCard({
                 activeDot={{ r: 4, fill: "var(--chart-4)", stroke: "var(--background)", strokeWidth: 2 }}
               />
             </AreaChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  )
-}
-
-export function StatusDistributionCard({
-  byStatus,
-  total,
-  isLoading = false,
-}: {
-  byStatus: Record<string, number>
-  total: number
-  isLoading?: boolean
-}) {
-  const pieData = useMemo(
-    () => Object.entries(byStatus).map(([name, value]) => ({ name, value })),
-    [byStatus]
-  )
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-4 w-40" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-[280px] w-full rounded-full" />
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (pieData.length === 0 || total === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm font-semibold text-foreground">Status Distribution</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex h-[280px] items-center justify-center">
-            <div className="text-center">
-              <div className="mx-auto mb-2 flex size-10 items-center justify-center rounded-lg bg-muted">
-                <svg className="size-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg>
-              </div>
-              <p className="text-sm text-muted-foreground">No status data available.</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-sm font-semibold text-foreground">Status Distribution</CardTitle>
-        <CardDescription className="text-xs">{total} total applications</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={{}} className="h-[280px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="40%"
-                innerRadius={55}
-                outerRadius={85}
-                paddingAngle={3}
-                dataKey="value"
-                strokeWidth={0}
-              >
-                {pieData.map((entry) => (
-                  <Cell
-                    key={`cell-${entry.name}`}
-                    fill={STATUS_COLORS[entry.name] || "var(--muted-foreground)"}
-                  />
-                ))}
-              </Pie>
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (!active || !payload?.length) return null
-                  const item = payload[0]
-                  const name = String(item.name)
-                  const value = Number(item.value)
-                  const pct = total > 0 ? Math.round((value / total) * 100) : 0
-                  return (
-                    <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-lg">
-                      <p className="font-medium capitalize text-foreground">{STATUS_LABELS[name] || name}</p>
-                      <p className="text-muted-foreground">
-                        {value} <span className="text-foreground/50">({pct}%)</span>
-                      </p>
-                    </div>
-                  )
-                }}
-              />
-              <Legend
-                verticalAlign="bottom"
-                height={36}
-                iconType="circle"
-                iconSize={7}
-                formatter={(value: string) => (
-                  <span className="text-xs capitalize text-muted-foreground ml-1">{STATUS_LABELS[value] || value}</span>
-                )}
-              />
-            </PieChart>
           </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
