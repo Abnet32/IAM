@@ -6,8 +6,6 @@ export type ExperienceLevel = "beginner" | "intermediate" | "advanced"
 
 export type SortBy = "fullName" | "email" | "applicationDate" | "status" | "track"
 
-export type SortOrder = "asc" | "desc"
-
 export interface User {
   id: string
   fullName: string
@@ -42,7 +40,6 @@ export interface Applicant extends ApplicantSummary {
   linkedInUrl: string | null
   motivation: string | null
   notes: string | null
-  updatedAt: string
 }
 
 export interface PaginationMeta {
@@ -69,21 +66,6 @@ export interface NotesResponse {
   updatedAt: string
 }
 
-export interface RefererenceItem {
-  value: string
-  label: string
-}
-
-export interface ApiError {
-  statusCode: number
-  error: string
-  message: string
-}
-
-export interface ValidationError extends ApiError {
-  errors?: Record<string, string[]>
-}
-
 export interface GetApplicantsParams {
   page?: number
   limit?: number
@@ -93,7 +75,7 @@ export interface GetApplicantsParams {
   country?: string
   experienceLevel?: ExperienceLevel
   sortBy?: SortBy
-  sortOrder?: SortOrder
+  sortOrder?: "asc" | "desc"
   simulateError?: boolean
   delay?: number
 }
