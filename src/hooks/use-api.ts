@@ -2,14 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import * as api from "../services/api"
 import type { GetApplicantsParams, ApplicationStatus } from "../types/api"
 
-export function useMe() {
-  return useQuery({
-    queryKey: ["me"],
-    queryFn: api.getMe,
-    staleTime: 5 * 60 * 1000,
-  })
-}
-
 export function useApplicants(params?: GetApplicantsParams) {
   return useQuery({
     queryKey: ["applicants", params],
@@ -54,16 +46,6 @@ export function useUpdateNotes() {
       api.updateApplicantNotes(id, notes),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["applicant"] })
-    },
-  })
-}
-
-export function useResetSession() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: api.resetSession,
-    onSuccess: () => {
-      qc.invalidateQueries()
     },
   })
 }
