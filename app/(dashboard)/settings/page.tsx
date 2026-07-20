@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useMemo, useSyncExternalStore } from "react"
 import { useTheme } from "next-themes"
 import { toast } from "sonner"
 import { useAuthStore } from "@/src/store"
@@ -11,26 +11,30 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Sun, Moon, Laptop, Save, Check } from "lucide-react"
 
+const emptySubscribe = () => () => {}
+
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
   const { user, token } = useAuthStore()
   const [name, setName] = useState("Admin")
   const [email, setEmail] = useState(user?.email ?? "admin@infnova.tech")
   const [saved, setSaved] = useState(false)
-  const [isDirty, setIsDirty] = useState(false)
-  const [mounted, setMounted] = useState(false)
 
-  useEffect(() => setMounted(true), [])
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  )
 
-  useEffect(() => {
-    setIsDirty(name !== "Admin" || email !== (user?.email ?? "admin@infnova.tech"))
-  }, [name, email, user])
+  const isDirty = useMemo(
+    () => name !== "Admin" || email !== (user?.email ?? "admin@infnova.tech"),
+    [name, email, user],
+  )
 
   const handleSave = useCallback(() => {
     if (!token) return
     useAuthStore.getState().setAuth(token, { fullName: name, email })
     setSaved(true)
-    setIsDirty(false)
     toast.success("Settings saved")
     setTimeout(() => setSaved(false), 2000)
   }, [token, name, email])
@@ -38,7 +42,6 @@ export default function SettingsPage() {
   const handleCancel = useCallback(() => {
     setName("Admin")
     setEmail(user?.email ?? "admin@infnova.tech")
-    setIsDirty(false)
   }, [user])
 
   return (
