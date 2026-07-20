@@ -35,6 +35,7 @@ import {
   User,
   Palette,
   HelpCircle,
+  ChevronsUpDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -72,7 +73,7 @@ export function AppSidebar() {
         <Link
           href="/"
           onClick={handleNav}
-          className="flex items-center gap-2.5 px-3 py-1.5 transition-opacity hover:opacity-80"
+          className="flex items-center justify-center gap-2.5 px-3 py-1.5 transition-opacity hover:opacity-80 group-data-[collapsible=icon]:px-0"
         >
           <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-bold">
             I
@@ -133,6 +134,7 @@ export function AppSidebar() {
                     {displayEmail}
                   </span>
                 </div>
+                <ChevronsUpDown className="ml-auto size-4 opacity-50 group-data-[collapsible=icon]:hidden" />
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-56">
                 <DropdownMenuLabel className="font-normal">
