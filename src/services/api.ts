@@ -20,10 +20,6 @@ export async function getMe(): Promise<User> {
   return data
 }
 
-export async function logout(): Promise<void> {
-  await api.post("/auth/logout")
-}
-
 export async function getApplicants(params?: GetApplicantsParams): Promise<PaginatedApplicants> {
   const query: Record<string, string | number | boolean | undefined> = {}
   if (params) {
@@ -53,10 +49,6 @@ export async function updateApplicantNotes(id: string, notes: string | null): Pr
 export async function getDashboardSummary(): Promise<DashboardSummary> {
   const { data } = await api.get<DashboardSummary>("/dashboard/summary")
   return data
-}
-
-export async function resetSession(): Promise<void> {
-  await api.post("/session/reset")
 }
 
 export async function getTracks(): Promise<{ value: string; label: string }[]> {
