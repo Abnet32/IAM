@@ -30,6 +30,7 @@ export interface ApplicantSummary {
   track: Track
   status: ApplicationStatus
   applicationDate: string
+  updatedAt: string
 }
 
 export interface Applicant extends ApplicantSummary {
