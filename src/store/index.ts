@@ -52,7 +52,6 @@ interface FilterState {
   setSortOrder: (order: "asc" | "desc") => void
   setPage: (page: number) => void
   setLimit: (limit: number) => void
-  resetFilters: () => void
 }
 
 const defaultFilters: FilterState = {
@@ -74,7 +73,6 @@ const defaultFilters: FilterState = {
   setSortOrder: () => {},
   setPage: () => {},
   setLimit: () => {},
-  resetFilters: () => {},
 }
 
 export const useFilterStore = create<FilterState>((set) => ({
@@ -96,15 +94,4 @@ export const useFilterStore = create<FilterState>((set) => ({
   setSortOrder: (order) => set({ sortOrder: order }),
   setPage: (page) => set({ page }),
   setLimit: (limit) => set({ limit, page: 1 }),
-  resetFilters: () => set({
-    search: defaultFilters.search,
-    status: defaultFilters.status,
-    track: defaultFilters.track,
-    country: defaultFilters.country,
-    experienceLevel: defaultFilters.experienceLevel,
-    sortBy: defaultFilters.sortBy,
-    sortOrder: defaultFilters.sortOrder,
-    page: defaultFilters.page,
-    limit: defaultFilters.limit,
-  }),
 }))
