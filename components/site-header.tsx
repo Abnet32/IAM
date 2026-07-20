@@ -1,12 +1,11 @@
-"use client"
+"use client";
 
-import { usePathname } from "next/navigation"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { ModeToggle } from "@/components/theme-toggle"
-import { Search, Bell } from "lucide-react"
+import { usePathname } from "next/navigation";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ModeToggle } from "@/components/theme-toggle";
+import { Search, Bell } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +13,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useAuthStore } from "@/src/store"
-import { useHydrateAuth } from "@/hooks/use-hydrate-auth"
+} from "@/components/ui/dropdown-menu";
+import { useAuthStore } from "@/src/store";
+import { useHydrateAuth } from "@/hooks/use-hydrate-auth";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -24,33 +23,36 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+} from "@/components/ui/breadcrumb";
 
 const pageNames: Record<string, string> = {
-  dashboard: "Dashboard",
+  "/": "Home",
   applicants: "Applicants",
-  statistics: "Statistics",
   settings: "Settings",
-}
+};
 
 export function SiteHeader() {
-  const pathname = usePathname()
-  const hydrated = useHydrateAuth()
-  const { user } = useAuthStore()
-  const segments = pathname.split("/").filter(Boolean)
+  const pathname = usePathname();
+  const hydrated = useHydrateAuth();
+  const { user } = useAuthStore();
+  const segments = pathname.split("/").filter(Boolean);
 
-  const dashboardSegment = segments[1] || "dashboard"
-  const pageName = pageNames[dashboardSegment] || dashboardSegment
-  const isDetail = segments.length > 2
+  const topSegment = segments[0] || "";
+  const pageName = pageNames[topSegment] || topSegment || "Overview";
+  const isApplicantDetail = segments[0] === "applicants" && segments.length > 1;
 
-  const initials = hydrated && user?.fullName
-    ? user.fullName.split(" ").map((n) => n[0]).join("").toUpperCase()
-    : "A"
-  const displayName = hydrated && user?.fullName ? user.fullName : "Admin"
-  const displayEmail = hydrated && user?.email ? user.email : "admin@infnova.tech"
+  const initials =
+    hydrated && user?.fullName
+      ? user.fullName
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+      : "A";
+  const displayName = "Admin";
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-4 border-b bg-background px-6">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="-ml-1" />
       </div>
@@ -58,69 +60,30 @@ export function SiteHeader() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            {isDetail ? (
-              <>
-                <BreadcrumbLink href="/dashboard/applicants">
-                  Applicants
-                </BreadcrumbLink>
-                <BreadcrumbSeparator />
+          {isApplicantDetail ? (
+            <>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/applicants">Applicants</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
                 <BreadcrumbPage>Detail</BreadcrumbPage>
-              </>
-            ) : (
+              </BreadcrumbItem>
+            </>
+          ) : topSegment ? (
+            <BreadcrumbItem>
               <BreadcrumbPage>{pageName}</BreadcrumbPage>
-            )}
-          </BreadcrumbItem>
+            </BreadcrumbItem>
+          ) : null}
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="ml-auto flex items-center gap-3">
-        <div className="relative hidden md:block">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search..."
-            className="h-9 w-48 pl-8 text-sm lg:w-64"
-          />
-        </div>
-
-        <Button variant="ghost" size="icon" className="size-9">
-          <Bell className="size-4" />
-          <span className="sr-only">Notifications</span>
-        </Button>
-
+      <div className="ml-auto flex items-center gap-1">
         <ModeToggle />
-
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="ghost" className="flex items-center gap-2 p-1" />
-            }
-          >
-            <Avatar className="size-8">
-              <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <span className="hidden text-sm font-medium md:block">
-              {displayName}
-            </span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>{displayEmail}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              useAuthStore.getState().clearAuth()
-              window.location.href = "/login"
-            }}>
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
     </header>
-  )
+  );
 }
