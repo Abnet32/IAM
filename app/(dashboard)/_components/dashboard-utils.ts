@@ -1,4 +1,4 @@
-import type { DashboardSummary, ApplicationStatus, Track } from "@/src/types/api"
+import type { DashboardSummary } from "@/src/types/api"
 
 export const STATUS_COLORS: Record<string, string> = {
   pending: "var(--chart-3)",
@@ -12,13 +12,6 @@ export const STATUS_LABELS: Record<string, string> = {
   shortlisted: "Shortlisted",
   accepted: "Accepted",
   rejected: "Rejected",
-}
-
-export const STATUS_ICONS: Record<string, string> = {
-  pending: "Clock",
-  shortlisted: "Users",
-  accepted: "CheckCircle",
-  rejected: "XCircle",
 }
 
 export function getGreeting(): string {
@@ -96,59 +89,6 @@ export function generateUniversityData(
   return universities
     .map((name, i) => ({ name, count: counts[i] }))
     .sort((a, b) => b.count - a.count)
-}
-
-export function generateActivityData(
-  applicants: Array<{ fullName: string; status: string; track: string; applicationDate: string; updatedAt?: string }>
-): Array<{ icon: string; time: string; description: string; color: string; date: string }> {
-  const activities: Array<{ icon: string; time: string; description: string; color: string; date: string }> = []
-
-  for (const app of applicants) {
-    const appDate = new Date(app.applicationDate)
-    const now = new Date()
-
-    const diffMs = now.getTime() - appDate.getTime()
-    const diffH = Math.floor(diffMs / 3600000)
-    const diffD = Math.floor(diffMs / 86400000)
-    let time: string
-    if (diffH < 1) time = "Just now"
-    else if (diffH < 24) time = `${diffH}h ago`
-    else if (diffD < 7) time = `${diffD}d ago`
-    else time = appDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-
-    activities.push({
-      icon: "CheckCircle",
-      time,
-      description: `${app.fullName} submitted an application for ${app.track.replace("-", " ")}`,
-      color: "text-emerald-500",
-      date: app.applicationDate,
-    })
-
-    if (app.status !== "pending") {
-      const statusDate = app.updatedAt ? new Date(app.updatedAt) : appDate
-      const statusDiffMs = now.getTime() - statusDate.getTime()
-      const statusDiffH = Math.floor(statusDiffMs / 3600000)
-      const statusDiffD = Math.floor(statusDiffMs / 86400000)
-      let statusTime: string
-      if (statusDiffH < 1) statusTime = "Just now"
-      else if (statusDiffH < 24) statusTime = `${statusDiffH}h ago`
-      else if (statusDiffD < 7) statusTime = `${statusDiffD}d ago`
-      else statusTime = statusDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-
-      const statusLabel = STATUS_LABELS[app.status] || app.status
-      activities.push({
-        icon: app.status === "rejected" ? "XCircle" : "ArrowRight",
-        time: statusTime,
-        description: `${app.fullName} was moved to ${statusLabel}`,
-        color: app.status === "rejected" ? "text-red-500" : "text-blue-500",
-        date: app.updatedAt || app.applicationDate,
-      })
-    }
-  }
-
-  return activities
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5)
 }
 
 export function computeInsights(data: DashboardSummary) {
