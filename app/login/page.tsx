@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { login } from "@/src/services/api"
 import { useAuthStore } from "@/src/store"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -26,11 +27,13 @@ export default function LoginPage() {
     try {
       const res = await login(email, password)
       setAuth(res.accessToken, res.user)
+      toast.success(`Welcome back, ${res.user.fullName || "Admin"}!`)
       router.push("/")
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Invalid credentials. Please try again."
       setError(message)
+      toast.error(message)
     } finally {
       setLoading(false)
     }
