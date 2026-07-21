@@ -1,60 +1,66 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { login } from "@/src/services/api"
-import { useAuthStore } from "@/src/store"
-import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { login } from "@/src/services/api";
+import { useAuthStore } from "@/src/store";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [remember, setRemember] = useState(false)
-  const { setAuth } = useAuthStore()
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [remember, setRemember] = useState(false);
+  const { setAuth } = useAuthStore();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
     try {
-      const res = await login(email, password)
-      setAuth(res.accessToken, res.user)
-      toast.success(`Welcome back, ${res.user.fullName || "Admin"}!`)
-      router.push("/")
+      const res = await login(email, password);
+      setAuth(res.accessToken, res.user);
+      toast.success(`Welcome back, ${res.user.fullName || "Admin"}!`);
+      router.push("/");
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Invalid credentials. Please try again."
-      setError(message)
-      toast.error(message)
+        err instanceof Error
+          ? err.message
+          : "Invalid credentials. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen">
       <div className="relative hidden w-1/2 lg:block">
         <div
           className="h-full w-full bg-cover bg-center"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80')" }}
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80')",
+          }}
           role="img"
           aria-label="Team collaboration"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary/60" />
+        <div className="absolute inset-0 " />
         <div className="absolute inset-0 flex flex-col justify-end p-12 text-white">
           <h2 className="text-3xl font-bold leading-tight">
             Welcome to InfNova
           </h2>
           <p className="mt-3 max-w-md text-sm text-white/80 leading-relaxed">
-            Manage your internship program with powerful tools for applicant tracking, evaluation, and team collaboration.
+            Manage your internship program with powerful tools for applicant
+            tracking, evaluation, and team collaboration.
           </p>
         </div>
       </div>
@@ -125,7 +131,11 @@ export default function LoginPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  {showPassword ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -138,12 +148,19 @@ export default function LoginPage() {
                 onChange={(e) => setRemember(e.target.checked)}
                 className="size-4 rounded border-border accent-primary"
               />
-              <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
+              <Label
+                htmlFor="remember"
+                className="text-sm text-muted-foreground cursor-pointer"
+              >
                 Remember me
               </Label>
             </div>
 
-            <Button type="submit" className="w-full h-10 font-medium" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full h-10 font-medium"
+              disabled={loading}
+            >
               {loading ? (
                 <span className="flex items-center gap-2">
                   <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -157,5 +174,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
