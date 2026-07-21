@@ -1,82 +1,15 @@
-# InfNova — Internship Applicant Management
+# InfNova Internship Applicant Management (IAM)
 
-A production-ready applicant tracking dashboard for managing internship recruitment. Built with Next.js 16, TypeScript, and Tailwind CSS v4.
+A modern, full-featured applicant tracking dashboard built for managing internship applications. Admins can view, search, filter, and manage applicants through a responsive, dark-mode-enabled interface.
 
----
+## Setup Instructions
 
-## Features
+### Prerequisites
 
-- **Authentication** — Email/password login with JWT token management
-- **Dashboard** — Real-time stats, application trends, hiring pipeline, and top universities
-- **Applicants** — Paginated table with search, filtering, sorting, and status management
-- **Applicant Detail** — Full profile view with skills, links, notes, and status timeline
-- **Settings** — Profile editing and theme customization
-- **Theme Support** — Light, dark, and system mode via next-themes
-- **Responsive Design** — Collapsible sidebar, mobile-friendly layouts
-- **Loading & Error States** — Skeleton loaders and graceful error handling
+- Node.js 18+ (recommended: 20+)
+- npm, yarn, or pnpm
 
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS v4 |
-| UI Components | shadcn/ui (base-nova style) |
-| Data Fetching | TanStack React Query 5 |
-| HTTP Client | Axios |
-| State Management | Zustand 5 |
-| Charts | Recharts 3 |
-| Icons | Lucide React |
-| Theming | next-themes |
-
----
-
-## Folder Structure
-
-```
-├── app/                          # Next.js App Router pages
-│   ├── layout.tsx                # Root layout (font, ThemeProvider)
-│   ├── login/page.tsx            # Login page
-│   ├── not-found.tsx             # 404 page
-│   └── (dashboard)/              # Dashboard route group
-│       ├── layout.tsx            # Sidebar + header layout wrapper
-│       ├── page.tsx              # Dashboard home
-│       ├── applicants/           # Applicant list & detail pages
-│       ├── settings/             # Settings page
-│       └── _components/          # Dashboard-specific components
-├── components/                   # Shared components
-│   ├── app-sidebar.tsx           # Main navigation sidebar
-│   ├── site-header.tsx           # Top header with breadcrumbs
-│   ├── theme-provider.tsx        # Theme context provider
-│   ├── theme-toggle.tsx          # Dark/light toggle button
-│   └── ui/                       # shadcn/ui primitives
-├── hooks/                        # Custom React hooks
-│   ├── use-hydrate-auth.ts       # Hydrate auth from localStorage
-│   └── use-mobile.ts             # Mobile breakpoint detection
-├── lib/                          # Utilities
-│   └── utils.ts                  # cn() helper (clsx + tailwind-merge)
-├── src/                          # Application source
-│   ├── hooks/                    # React Query hooks
-│   │   └── use-api.ts            # Data fetching hooks
-│   ├── lib/                      # Core libraries
-│   │   └── axios.ts              # Axios instance with interceptors
-│   ├── providers/                # Context providers
-│   │   └── providers.tsx         # QueryClient provider
-│   ├── services/                 # API service functions
-│   │   └── api.ts                # All API calls
-│   ├── store/                    # Zustand stores
-│   │   └── index.ts              # Auth + filter stores
-│   └── types/                    # TypeScript types
-│       └── api.ts                # API type definitions
-└── public/                       # Static assets
-```
-
----
-
-## Installation
+### Getting Started
 
 ```bash
 # Clone the repository
@@ -86,122 +19,177 @@ cd IAM
 # Install dependencies
 npm install
 
-# Set up environment variables
+# Create environment file
 cp .env.example .env.local
 
 # Start development server
 npm run dev
 ```
 
----
+The app runs at [http://localhost:3000](http://localhost:3000).
 
-## Environment Variables
-
-Create a `.env.local` file in the project root:
-
-```env
-NEXT_PUBLIC_API_BASE_URL=https://infnova-intern.vercel.app/api
-```
-
-| Variable | Description | Required |
-|----------|------------|----------|
-| `NEXT_PUBLIC_API_BASE_URL` | Base URL for the backend API | Yes |
-
----
-
-## Available Scripts
+### Available Scripts
 
 | Command | Description |
-|---------|------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Create production build |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint checks |
+|---------|-------------|
+| `npm run dev` | Start the development server |
+| `npm run build` | Create a production build |
+| `npm start` | Start the production server |
+| `npm run lint` | Run ESLint |
 
----
+### Login Credentials
+
+Use the provided API credentials to authenticate:
+
+- **Email:** `admin@infnova.tech`
+- **Password:** `InternChallenge2026!`
+
+## Technologies Used
+
+| Category | Technology | Purpose |
+|----------|------------|---------|
+| **Framework** | Next.js 16 (App Router) | File-based routing, layouts, server components |
+| **Language** | TypeScript 5 | Type safety across the entire codebase |
+| **UI Library** | React 19 | Component rendering and state management |
+| **Styling** | Tailwind CSS 4 | Utility-first CSS with CSS-first config |
+| **UI Primitives** | shadcn/ui (base-nova style) + @base-ui/react | Accessible, composable component primitives |
+| **Server State** | TanStack React Query v5 | Data fetching, caching, mutations, cache invalidation |
+| **Client State** | Zustand v5 | Authentication state, filter preferences |
+| **HTTP Client** | Axios | API requests with interceptors for auth and error handling |
+| **Charts** | Recharts v3 | Dashboard visualizations (area charts, bar charts) |
+| **Theming** | next-themes | Dark/light mode with system preference detection |
+| **Toasts** | Sonner v2 | Colorized, accessible toast notifications |
+| **Icons** | Lucide React | Consistent icon library throughout the app |
 
 ## Architecture
 
-### Feature-Based Organization
+### High-Level Overview
 
-The project follows a hybrid architecture combining App Router conventions with feature-based organization:
+```
+┌─────────────────────────────────────────────────┐
+│                   Browser                        │
+│                                                  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────────┐  │
+│  │  Pages   │  │Components│  │   Zustand     │  │
+│  │ (routes) │──│ (UI)     │──│   Stores      │  │
+│  └──────────┘  └──────────┘  └──────────────┘  │
+│       │              │              │            │
+│       └──────────────┴──────────────┘            │
+│                      │                           │
+│              ┌───────┴────────┐                  │
+│              │  React Query   │                  │
+│              │    Hooks       │                  │
+│              └───────┬────────┘                  │
+│                      │                           │
+│              ┌───────┴────────┐                  │
+│              │  Service Layer │                  │
+│              │  (api.ts)      │                  │
+│              └───────┬────────┘                  │
+│                      │                           │
+│              ┌───────┴────────┐                  │
+│              │   Axios +      │                  │
+│              │  Interceptors  │                  │
+│              └───────┬────────┘                  │
+│                      │                           │
+└──────────────────────┼───────────────────────────┘
+                       │  HTTPS
+                       ▼
+          ┌────────────────────────┐
+          │   Backend API          │
+          │   (Vercel-hosted)      │
+          │   /api/*               │
+          └────────────────────────┘
+```
 
-- **Route groups** — `(dashboard)` wraps all authenticated pages with sidebar + header layout
-- **Component colocation** — Dashboard-specific components live in `_components/` next to the dashboard pages
-- **Shared components** — Reusable UI lives in `components/`
+### Routing & Layouts
 
-### State Management
+The app uses Next.js App Router with a route group pattern:
 
-- **Zustand** for client-side state (auth tokens, user data, filter preferences)
-- **TanStack Query** for server state (API data caching, mutations, invalidation)
-- **React state** for local UI state (form inputs, modals, toggles)
+```
+app/
+├── layout.tsx                    # Root: font, ThemeProvider, Toaster
+├── login/page.tsx                # Login (outside dashboard layout)
+├── not-found.tsx                 # Custom 404
+└── (dashboard)/                  # Authenticated route group
+    ├── layout.tsx                # Sidebar + header + React Query provider
+    ├── page.tsx                  # Dashboard home
+    ├── applicants/
+    │   ├── page.tsx              # Applicant list with filters/pagination
+    │   └── [id]/page.tsx         # Applicant detail profile
+    └── settings/page.tsx         # Profile + appearance settings
+```
+
+The login page lives outside the `(dashboard)` group, so it renders without the sidebar/header chrome. All dashboard pages share the sidebar + header layout.
+
+### State Management (Three Layers)
+
+| Layer | Tool | Manages |
+|-------|------|---------|
+| **Server state** | React Query | API data, loading/error states, mutations, cache invalidation |
+| **Client state** | Zustand | Auth (token + user), filter/sort/pagination preferences |
+| **Local UI state** | useState | Form inputs, toggles, edited notes |
+
+React Query is configured with a 15-second stale time, single retry on failure, and no refetch on window focus. The dashboard auto-refreshes every 30 seconds.
+
+### Auth Flow
+
+```
+Login form → POST /auth/login → Store JWT in localStorage
+                                    ↓
+              Axios interceptor attaches Bearer token to all requests
+                                    ↓
+              Any 401 response → Clear token → Redirect to /login
+```
+
+There is no Next.js middleware for route protection. Auth is entirely client-side: the JWT is stored in localStorage, attached to requests via an Axios request interceptor, and 401 responses trigger automatic logout with a toast notification.
 
 ### API Layer
 
-```
-Axios Instance (interceptors) → Service Functions → React Query Hooks → Components
-```
+All API communication flows through four layers:
 
-- **Axios** handles HTTP, auth headers (Bearer token), and 401 redirect
-- **Services** are pure async functions that call API endpoints
-- **Hooks** wrap services with React Query for caching, loading states, and invalidation
+1. **Axios instance** (`src/lib/axios.ts`) — Configured with the base URL, request interceptor for auth, response interceptor for 401 handling
+2. **Service functions** (`src/services/api.ts`) — Typed wrappers around Axios calls (login, getApplicants, updateStatus, etc.)
+3. **React Query hooks** (`src/hooks/use-api.ts`) — `useQuery` for reads, `useMutation` for writes with automatic cache invalidation and toast feedback
+4. **Components** — Consume hooks, render data, trigger mutations
 
----
+### Component Structure
 
-## Authentication Flow
+- **`components/ui/`** — 24 shadcn/ui primitives (buttons, inputs, tables, dropdowns, etc.)
+- **`components/`** — Shared layout components (sidebar, header, theme toggle)
+- **`app/(dashboard)/_components/`** — Dashboard-specific components (stats cards, charts, pipeline)
 
-1. User submits credentials on `/login`
-2. `login()` service calls `POST /auth/login`
-3. Token + user data stored in Zustand + localStorage
-4. Axios interceptor attaches `Authorization: Bearer <token>` to all requests
-5. On 401 response, token is cleared and user is redirected to `/login`
-6. `useHydrateAuth` hook restores auth state from localStorage on page load
+## Assumptions
 
----
+1. **Mock backend API** — The API at `https://infnova-intern.vercel.app/api` is a session-based mock. Status/notes changes persist within a login session but reset on re-login since each new login creates a fresh token.
 
-## API Integration
+2. **Client-side auth** — No server-side rendering for auth. Protected routes rely on 401 API responses rather than middleware. An unauthenticated user can technically load dashboard pages but will be redirected when the first API call fails.
 
-All API calls go through a centralized Axios instance:
+3. **Single admin role** — The app assumes a single admin user type. No role-based access control or multi-user scenarios are implemented.
 
-- **Base URL** — Configured via `NEXT_PUBLIC_API_BASE_URL`
-- **Auth** — Bearer token injected via request interceptor
-- **Error Handling** — 401 responses trigger automatic logout
-- **Query Invalidation** — Mutations invalidate relevant query caches for fresh data
+4. **Synthetic dashboard data** — Some dashboard visualizations (application trends, university rankings) are generated from real summary counts using a seeded PRNG, not from actual per-record data.
 
----
+5. **localStorage for auth** — JWT is stored in localStorage rather than httpOnly cookies. This is simpler but less secure for production use.
 
-## Responsive Design
+6. **No offline support** — The app requires an active network connection. There is no service worker or offline caching.
 
-| Breakpoint | Layout |
-|-----------|--------|
-| Mobile (< 768px) | Full-width content, collapsed sidebar (sheet) |
-| Tablet (768px - 1024px) | Two-column grids, sidebar toggles |
-| Desktop (> 1024px) | Full sidebar, multi-column layouts |
+## What I Would Improve With More Time
 
----
+1. **Route protection** — Add Next.js middleware to redirect unauthenticated users at the server level, preventing any dashboard page from rendering without a valid token.
 
-## Performance Optimizations
+2. **Persistent data** — If the backend supported it, implement optimistic updates (updating the UI immediately before the server confirms) for status changes and notes.
 
-- **React Query caching** — Reduces redundant API calls with configurable stale times
-- **Memoization** — `useMemo` for expensive computations (trend data, university stats)
-- **Lazy rendering** — Dashboard components only render when data is available
-- **CSS transitions** — Lightweight animations without JavaScript overhead
-- **Image optimization** — Next.js built-in image optimization for static assets
+3. **Accessibility** — Add comprehensive ARIA labels, keyboard navigation for the data table, focus management for modals, and screen reader announcements for toast notifications.
 
----
+4. **Testing** — Add unit tests for service functions and hooks, component tests with React Testing Library, and E2E tests with Playwright for critical user flows (login, status change, pagination).
 
-## Future Improvements
+5. **Error boundaries** — Implement React error boundaries to gracefully handle unexpected render errors, especially in the dashboard charts and data-heavy components.
 
-- Real-time notifications via WebSocket
-- Export applicants to CSV/PDF
-- Role-based access control (admin, reviewer, viewer)
-- Bulk status updates
-- Advanced analytics with date range filtering
-- Unit and integration tests
-- CI/CD pipeline with GitHub Actions
+6. **API layer improvements** — Add request deduplication, a global loading indicator for navigation, and retry logic with exponential backoff for transient failures.
 
----
+7. **Performance** — Implement virtual scrolling for large applicant lists, code-split the dashboard charts, and add image optimization for any user-uploaded content.
 
-## Author
+8. **Multi-user support** — Add role-based permissions, audit logging for status changes, and the ability for multiple admins to collaborate without session conflicts.
 
-**Abnet** — [GitHub](https://github.com/Abnet32)
+9. **URL-based filter state** — Sync filter/sort/pagination state with URL query parameters so users can share filtered views and use browser back/forward navigation.
+
+10. **E2E error simulation** — The API supports `simulateError` and `delay` query parameters. Build a developer panel to test loading states, error states, and slow network conditions.
