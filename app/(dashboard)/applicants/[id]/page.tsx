@@ -19,6 +19,8 @@ import {
   Phone,
   MapPin,
   Award,
+  AlertTriangle,
+  RefreshCw,
 } from "lucide-react"
 
 function GitHubIcon({ className }: { className?: string }) {
@@ -50,7 +52,7 @@ export default function ApplicantDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const { data: applicant, isLoading, error } = useApplicant(id)
+  const { data: applicant, isLoading, error, refetch } = useApplicant(id)
   const updateStatus = useUpdateStatus()
   const updateNotes = useUpdateNotes()
   const [editedNotes, setEditedNotes] = useState<string | null>(null)
@@ -84,8 +86,32 @@ export default function ApplicantDetailPage({
 
   if (error || !applicant) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <p className="text-muted-foreground">Applicant not found.</p>
+      <div className="space-y-6 page-enter">
+        <Link href="/applicants" className="inline-flex">
+          <Button variant="ghost" size="icon">
+            <ArrowLeft className="size-4" />
+          </Button>
+        </Link>
+        <div className="flex flex-col h-64 items-center justify-center rounded-lg border border-destructive/20 bg-destructive/5 gap-3">
+          <AlertTriangle className="size-8 text-destructive" />
+          <div className="text-center">
+            <p className="text-sm font-medium text-foreground">Applicant not found</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {error instanceof Error ? error.message : "This applicant may have been removed or you don't have access."}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              <RefreshCw className="size-3.5 mr-1.5" />
+              Try Again
+            </Button>
+            <Link href="/applicants">
+              <Button variant="outline" size="sm">
+                Back to Applicants
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     )
   }
