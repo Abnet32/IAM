@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +12,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -33,8 +33,8 @@ import {
   Settings,
   LogOut,
   User,
-  Palette,
-  ChevronsUpDown,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -50,7 +50,7 @@ export function AppSidebar() {
   const { setOpenMobile } = useSidebar();
   const hydrated = useHydrateAuth();
   const { user } = useAuthStore();
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   const handleNav = () => setOpenMobile(false);
 
@@ -72,7 +72,7 @@ export function AppSidebar() {
         <Link
           href="/"
           onClick={handleNav}
-          className="flex items-center justify-center gap-2.5 px-3 py-1.5 transition-opacity hover:opacity-80 group-data-[collapsible=icon]:px-0"
+          className="flex items-center gap-2.5 px-3 py-1.5 transition-opacity hover:opacity-80"
         >
           <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-bold">
             I
@@ -111,6 +111,8 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
+      <SidebarSeparator className="mx-3" />
+
       <SidebarFooter className="p-3">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -121,7 +123,7 @@ export function AppSidebar() {
                 }
               >
                 <Avatar className="size-8 shrink-0">
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs flex items-center justify-center font-semibold">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs  font-semibold flex items-center justify-center ">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
@@ -133,7 +135,6 @@ export function AppSidebar() {
                     {displayEmail}
                   </span>
                 </div>
-                <ChevronsUpDown className="ml-auto size-4 opacity-50 group-data-[collapsible=icon]:hidden" />
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-56">
                 <DropdownMenuLabel className="font-normal">
@@ -163,15 +164,20 @@ export function AppSidebar() {
                   <Settings className="size-4" />
                   Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                  <Palette className="size-4" />
-                  Appearance
+                <DropdownMenuItem
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                >
+                  {theme === "dark" ? (
+                    <Sun className="size-4" />
+                  ) : (
+                    <Moon className="size-4" />
+                  )}
+                  {theme === "dark" ? "Light mode" : "Dark mode"}
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => {
-                    toast.success("Logged out successfully")
                     useAuthStore.getState().clearAuth();
                     window.location.href = "/login";
                   }}
