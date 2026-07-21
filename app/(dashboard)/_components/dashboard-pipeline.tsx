@@ -3,7 +3,61 @@
 import { useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  DotProps,
+} from "recharts"
 import type { DashboardSummary } from "@/src/types/api"
+
+const STAGE_CONFIG = [
+  { key: "applied", label: "Applied", x: 1, color: "#eab308" },
+  { key: "pending", label: "Pending", x: 2, color: "#f97316" },
+  { key: "shortlisted", label: "Shortlisted", x: 3, color: "#8b5cf6" },
+  { key: "accepted", label: "Accepted", x: 4, color: "#10b981" },
+  { key: "rejected", label: "Rejected", x: 5, color: "#ef4444" },
+] as const
+
+function getStageCount(key: string, data: DashboardSummary): number {
+  if (key === "applied") return data.totalApplicants
+  return data.byStatus[key] ?? 0
+}
+
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: Array<{ payload: { label: string; count: number; color: string } }>
+}
+
+function CustomTooltip({ active, payload }: CustomTooltipProps) {
+  if (!active || !payload?.length) return null
+  const d = payload[0].payload
+  return (
+    <div className="rounded-lg border bg-background px-3 py-2 shadow-md">
+      <p className="text-xs font-semibold" style={{ color: d.color }}>{d.label}</p>
+      <p className="text-sm font-bold text-foreground">{d.count} applicants</p>
+    </div>
+  )
+}
+
+function CustomDot(props: DotProps & { payload?: { color: string } }) {
+  const { cx, cy, payload } = props
+  if (!cx || !cy || !payload) return null
+  return (
+    <circle
+      cx={cx}
+      cy={cy}
+      r={5}
+      fill={payload.color}
+      stroke="hsl(var(--background))"
+      strokeWidth={2}
+    />
+  )
+}
 
 export function HiringPipelineCard({
   data,
@@ -12,19 +66,15 @@ export function HiringPipelineCard({
   data: DashboardSummary
   isLoading?: boolean
 }) {
-  const stages = useMemo(() => {
-    const total = data.totalApplicants || 1
-    const shortlisted = data.byStatus.shortlisted ?? 0
-    const accepted = data.byStatus.accepted ?? 0
-    const rejected = data.byStatus.rejected ?? 0
-
-    return [
-      { label: "Applied", count: total, pct: 100, color: "bg-amber-500 dark:bg-amber-400" },
-      { label: "Screening", count: shortlisted + accepted + rejected, pct: total > 0 ? Math.round(((shortlisted + accepted + rejected) / total) * 100) : 0, color: "bg-blue-500 dark:bg-blue-400" },
-      { label: "Interview", count: shortlisted, pct: total > 0 ? Math.round((shortlisted / total) * 100) : 0, color: "bg-emerald-500 dark:bg-emerald-400" },
-      { label: "Accepted", count: accepted, pct: total > 0 ? Math.round((accepted / total) * 100) : 0, color: "bg-primary" },
-    ]
+  const chartData = useMemo(() => {
+    return STAGE_CONFIG.map((s) => ({
+      label: s.label,
+      count: getStageCount(s.key, data),
+      color: s.color,
+    }))
   }, [data])
+
+  const primaryColor = "#8b5cf6"
 
   if (isLoading) {
     return (
@@ -33,17 +83,7 @@ export function HiringPipelineCard({
           <Skeleton className="h-4 w-36" />
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="space-y-1.5">
-                <div className="flex justify-between">
-                  <Skeleton className="h-3 w-20" />
-                  <Skeleton className="h-3 w-8" />
-                </div>
-                <Skeleton className="h-2 w-full rounded-full" />
-              </div>
-            ))}
-          </div>
+          <Skeleton className="h-[280px] w-full" />
         </CardContent>
       </Card>
     )
@@ -74,28 +114,74 @@ export function HiringPipelineCard({
       <CardHeader>
         <CardTitle className="text-sm font-semibold text-foreground">Hiring Pipeline</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {stages.map((stage) => (
-            <div key={stage.label} className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className={`size-2 rounded-full ${stage.color}`} />
-                  <span className="text-xs font-medium text-foreground">{stage.label}</span>
+      <CardContent className="space-y-6">
+        <ResponsiveContainer width="100%" height={260}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: -10 }}>
+            <defs>
+              <linearGradient id="pipelineGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={primaryColor} stopOpacity={0.4} />
+                <stop offset="100%" stopColor={primaryColor} stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+            <XAxis
+              dataKey="label"
+              tick={{ fill: "var(--foreground)", fontSize: 11 }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              tick={{ fill: "var(--foreground)", fontSize: 11 }}
+              tickLine={false}
+              axisLine={false}
+              allowDecimals={false}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: "3 3", stroke: "hsl(var(--muted-foreground))" }} />
+            <Area
+              type="monotone"
+              dataKey="count"
+              stroke={primaryColor}
+              strokeWidth={2.5}
+              fill="url(#pipelineGradient)"
+              dot={<CustomDot />}
+              activeDot={{ r: 7, strokeWidth: 2, stroke: "hsl(var(--background))" }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+
+        <div className="space-y-3 border-t pt-4">
+          {chartData.map((stage) => {
+            const pct = data.totalApplicants > 0
+              ? Math.round((stage.count / data.totalApplicants) * 100)
+              : 0
+
+            return (
+              <div key={stage.label} className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="size-2 rounded-full"
+                      style={{ backgroundColor: stage.color }}
+                    />
+                    <span className="text-xs font-medium text-foreground">{stage.label}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-foreground tabular-nums">{stage.count}</span>
+                    <span className="text-[10px] text-muted-foreground tabular-nums">({pct}%)</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-bold text-foreground tabular-nums">{stage.count}</span>
-                  <span className="text-[10px] text-muted-foreground tabular-nums">({stage.pct}%)</span>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${pct}%`,
+                      backgroundColor: stage.color,
+                    }}
+                  />
                 </div>
               </div>
-              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${stage.color}`}
-                  style={{ width: `${stage.pct}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </CardContent>
     </Card>
