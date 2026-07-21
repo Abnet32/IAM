@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 import * as api from "../services/api"
 import type { GetApplicantsParams, ApplicationStatus } from "../types/api"
 
@@ -31,10 +32,14 @@ export function useUpdateStatus() {
   return useMutation({
     mutationFn: ({ id, status }: { id: string; status: ApplicationStatus }) =>
       api.updateApplicantStatus(id, status),
-    onSuccess: () => {
+    onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ["applicants"] })
       qc.invalidateQueries({ queryKey: ["applicant"] })
       qc.invalidateQueries({ queryKey: ["dashboard"] })
+      toast.success(`Status updated to ${data.status}`)
+    },
+    onError: () => {
+      toast.error("Failed to update status. Please try again.")
     },
   })
 }
@@ -46,6 +51,10 @@ export function useUpdateNotes() {
       api.updateApplicantNotes(id, notes),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["applicant"] })
+      toast.success("Notes saved successfully")
+    },
+    onError: () => {
+      toast.error("Failed to save notes. Please try again.")
     },
   })
 }
