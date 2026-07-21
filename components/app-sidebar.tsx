@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
@@ -170,6 +171,7 @@ export function AppSidebar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => {
+                    toast.success("Logged out successfully")
                     useAuthStore.getState().clearAuth();
                     window.location.href = "/login";
                   }}
