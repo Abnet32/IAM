@@ -39,6 +39,9 @@ import {
   MoreHorizontal,
   ArrowUpDown,
   X,
+  Users,
+  AlertTriangle,
+  RefreshCw,
 } from "lucide-react"
 
 const statusBadge: Record<string, string> = {
@@ -50,7 +53,7 @@ const statusBadge: Record<string, string> = {
 
 export default function ApplicantsPage() {
   const filters = useFilterStore()
-  const { data, isLoading, error } = useApplicants({
+  const { data, isLoading, error, refetch, isFetching } = useApplicants({
     page: filters.page,
     limit: filters.limit,
     search: filters.search || undefined,
@@ -75,11 +78,19 @@ export default function ApplicantsPage() {
 
   return (
     <div className="space-y-6 page-enter">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Applicants</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Manage and review internship applicants
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Applicants</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage and review internship applicants
+          </p>
+        </div>
+        {isFetching && !isLoading && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <RefreshCw className="size-3 animate-spin" />
+            Updating...
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
@@ -173,10 +184,18 @@ export default function ApplicantsPage() {
       </div>
 
       {error ? (
-        <div className="flex h-64 items-center justify-center rounded-lg border border-destructive/20">
-          <p className="text-sm text-muted-foreground">
-            Failed to load applicants. Please try again.
-          </p>
+        <div className="flex flex-col h-64 items-center justify-center rounded-lg border border-destructive/20 bg-destructive/5 gap-3">
+          <AlertTriangle className="size-8 text-destructive" />
+          <div className="text-center">
+            <p className="text-sm font-medium text-foreground">Failed to load applicants</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {error instanceof Error ? error.message : "An unexpected error occurred."}
+            </p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <RefreshCw className="size-3.5 mr-1.5" />
+            Try Again
+          </Button>
         </div>
       ) : (
         <>
@@ -184,6 +203,7 @@ export default function ApplicantsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-12 font-semibold">No.</TableHead>
                   <TableHead className="font-semibold">Name</TableHead>
                   <TableHead className="font-semibold">Email</TableHead>
                   <TableHead className="font-semibold">Track</TableHead>
@@ -197,6 +217,7 @@ export default function ApplicantsPage() {
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-8" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-40" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
@@ -208,13 +229,38 @@ export default function ApplicantsPage() {
                   ))
                 ) : applicants.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                      No applicants found.
+                    <TableCell colSpan={8} className="h-40">
+                      <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                        <Users className="size-10 opacity-40" />
+                        <div className="text-center">
+                          <p className="text-sm font-medium">No applicants found</p>
+                          <p className="text-xs mt-1">
+                            {hasFilters
+                              ? "Try adjusting your filters or search query."
+                              : "There are no applicants yet."}
+                          </p>
+                        </div>
+                        {hasFilters && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              filters.setSearch("")
+                              filters.setStatus("")
+                              filters.setTrack("")
+                            }}
+                          >
+                            <X className="size-3.5 mr-1.5" />
+                            Clear Filters
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  applicants.map((app) => (
+                  applicants.map((app, index) => (
                     <TableRow key={app.id} className="group">
+                      <TableCell className="text-muted-foreground tabular-nums">{from + index}</TableCell>
                       <TableCell className="font-medium">
                         <Link
                           href={`/applicants/${app.id}`}
@@ -263,9 +309,10 @@ export default function ApplicantsPage() {
                                     onClick={() =>
                                       updateStatus.mutate({ id: app.id, status: s })
                                     }
+                                    disabled={updateStatus.isPending}
                                     className="capitalize"
                                   >
-                                    Mark as {s}
+                                    {updateStatus.isPending ? "Updating..." : `Mark as ${s}`}
                                   </DropdownMenuItem>
                                 )
                             )}
