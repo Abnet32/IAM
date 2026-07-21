@@ -32,29 +32,31 @@ export function SiteHeader() {
         <SidebarTrigger className="-ml-1" />
       </div>
 
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          {isApplicantDetail ? (
-            <>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/applicants">Applicants</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Detail</BreadcrumbPage>
-              </BreadcrumbItem>
-            </>
-          ) : topSegment ? (
+      <div className="flex items-center gap-2 border border-border rounded-md px-3 py-1.5">
+        <Breadcrumb>
+          <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>{pageName}</BreadcrumbPage>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
             </BreadcrumbItem>
-          ) : null}
-        </BreadcrumbList>
-      </Breadcrumb>
+            <BreadcrumbSeparator />
+            {isApplicantDetail ? (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/applicants">Applicants</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Detail</BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            ) : topSegment ? (
+              <BreadcrumbItem>
+                <BreadcrumbPage>{pageName}</BreadcrumbPage>
+              </BreadcrumbItem>
+            ) : null}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
 
       <div className="ml-auto flex items-center gap-1">
         <ModeToggle />

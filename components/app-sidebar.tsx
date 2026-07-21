@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -35,6 +36,8 @@ import {
   User,
   Sun,
   Moon,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -51,6 +54,7 @@ export function AppSidebar() {
   const hydrated = useHydrateAuth();
   const { user } = useAuthStore();
   const { theme, setTheme } = useTheme();
+  const [adminOpen, setAdminOpen] = React.useState(false);
 
   const handleNav = () => setOpenMobile(false);
 
@@ -74,7 +78,7 @@ export function AppSidebar() {
           onClick={handleNav}
           className="flex items-center gap-2.5 px-3 py-1.5 transition-opacity hover:opacity-80"
         >
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-bold">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-bold group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-md">
             I
           </div>
           <span className="text-base font-bold tracking-tight text-sidebar-foreground group-data-[collapsible=icon]:hidden">
@@ -111,19 +115,17 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarSeparator className="mx-3" />
-
       <SidebarFooter className="p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
+            <DropdownMenu open={adminOpen} onOpenChange={setAdminOpen}>
               <DropdownMenuTrigger
                 render={
                   <button className="flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground outline-none" />
                 }
               >
                 <Avatar className="size-8 shrink-0">
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs  font-semibold flex items-center justify-center ">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
@@ -135,6 +137,11 @@ export function AppSidebar() {
                     {displayEmail}
                   </span>
                 </div>
+                {adminOpen ? (
+                  <ChevronUp className="ml-auto size-4 shrink-0 text-muted-foreground group-data-[collapsible=icon]:hidden" />
+                ) : (
+                  <ChevronDown className="ml-auto size-4 shrink-0 text-muted-foreground group-data-[collapsible=icon]:hidden" />
+                )}
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-56">
                 <DropdownMenuLabel className="font-normal">
