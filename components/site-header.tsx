@@ -27,12 +27,12 @@ export function SiteHeader() {
   const isApplicantDetail = segments[0] === "applicants" && segments.length > 1;
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-6">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="-ml-1" />
       </div>
 
-      <div className="flex items-center gap-2 border border-border rounded-md px-3 py-1.5">
+      <div className="flex items-center gap-2  rounded-md px-3 py-1.5">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
