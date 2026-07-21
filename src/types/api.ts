@@ -22,6 +22,7 @@ export interface LoginResponse {
 
 export interface ApplicantSummary {
   id: string
+  number: number
   fullName: string
   email: string
   country: string
