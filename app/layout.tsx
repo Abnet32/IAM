@@ -12,6 +12,9 @@ const font = Lexend_Deca({
 export const metadata: Metadata = {
   title: "Applicant Management",
   description: "Internship Applicant Management Dashboard",
+  icons: {
+    icon: "icon.png",
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
