@@ -15,18 +15,13 @@ import {
 } from "recharts"
 import type { DashboardSummary } from "@/src/types/api"
 
-const STAGE_CONFIG = [
-  { key: "applied", label: "Applied", x: 1, color: "#eab308" },
-  { key: "pending", label: "Pending", x: 2, color: "#f97316" },
-  { key: "shortlisted", label: "Shortlisted", x: 3, color: "#8b5cf6" },
-  { key: "accepted", label: "Accepted", x: 4, color: "#10b981" },
-  { key: "rejected", label: "Rejected", x: 5, color: "#ef4444" },
+const TRACK_CONFIG = [
+  { key: "frontend", label: "Frontend", color: "#3b82f6" },
+  { key: "backend", label: "Backend", color: "#10b981" },
+  { key: "ui-ux", label: "UI/UX", color: "#8b5cf6" },
+  { key: "data-analytics", label: "Data Analytics", color: "#f59e0b" },
+  { key: "mobile", label: "Mobile", color: "#ec4899" },
 ] as const
-
-function getStageCount(key: string, data: DashboardSummary): number {
-  if (key === "applied") return data.totalApplicants
-  return data.byStatus[key] ?? 0
-}
 
 interface CustomTooltipProps {
   active?: boolean
@@ -67,10 +62,10 @@ export function HiringPipelineCard({
   isLoading?: boolean
 }) {
   const chartData = useMemo(() => {
-    return STAGE_CONFIG.map((s) => ({
-      label: s.label,
-      count: getStageCount(s.key, data),
-      color: s.color,
+    return TRACK_CONFIG.map((t) => ({
+      label: t.label,
+      count: data.byTrack[t.key] ?? 0,
+      color: t.color,
     }))
   }, [data])
 
@@ -93,7 +88,7 @@ export function HiringPipelineCard({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-semibold text-foreground">Hiring Pipeline</CardTitle>
+          <CardTitle className="text-sm font-semibold text-foreground">Overview by Track</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex h-48 items-center justify-center">
@@ -101,7 +96,7 @@ export function HiringPipelineCard({
               <div className="mx-auto mb-2 flex size-10 items-center justify-center rounded-lg bg-muted">
                 <svg className="size-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" /></svg>
               </div>
-              <p className="text-sm text-muted-foreground">No pipeline data available.</p>
+              <p className="text-sm text-muted-foreground">No track data available.</p>
             </div>
           </div>
         </CardContent>
@@ -112,13 +107,13 @@ export function HiringPipelineCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-sm font-semibold text-foreground">Hiring Pipeline</CardTitle>
+        <CardTitle className="text-sm font-semibold text-foreground">Overview by Track</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <ResponsiveContainer width="100%" height={260}>
           <AreaChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: -10 }}>
             <defs>
-              <linearGradient id="pipelineGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="trackGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={primaryColor} stopOpacity={0.4} />
                 <stop offset="100%" stopColor={primaryColor} stopOpacity={0.02} />
               </linearGradient>
@@ -142,7 +137,7 @@ export function HiringPipelineCard({
               dataKey="count"
               stroke={primaryColor}
               strokeWidth={2.5}
-              fill="url(#pipelineGradient)"
+              fill="url(#trackGradient)"
               dot={<CustomDot />}
               activeDot={{ r: 7, strokeWidth: 2, stroke: "hsl(var(--background))" }}
             />
@@ -150,23 +145,23 @@ export function HiringPipelineCard({
         </ResponsiveContainer>
 
         <div className="space-y-3 border-t pt-4">
-          {chartData.map((stage) => {
+          {chartData.map((track) => {
             const pct = data.totalApplicants > 0
-              ? Math.round((stage.count / data.totalApplicants) * 100)
+              ? Math.round((track.count / data.totalApplicants) * 100)
               : 0
 
             return (
-              <div key={stage.label} className="space-y-1">
+              <div key={track.label} className="space-y-1">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div
                       className="size-2 rounded-full"
-                      style={{ backgroundColor: stage.color }}
+                      style={{ backgroundColor: track.color }}
                     />
-                    <span className="text-xs font-medium text-foreground">{stage.label}</span>
+                    <span className="text-xs font-medium text-foreground">{track.label}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-foreground tabular-nums">{stage.count}</span>
+                    <span className="text-xs font-bold text-foreground tabular-nums">{track.count}</span>
                     <span className="text-[10px] text-muted-foreground tabular-nums">({pct}%)</span>
                   </div>
                 </div>
@@ -175,7 +170,7 @@ export function HiringPipelineCard({
                     className="h-full rounded-full transition-all duration-500"
                     style={{
                       width: `${pct}%`,
-                      backgroundColor: stage.color,
+                      backgroundColor: track.color,
                     }}
                   />
                 </div>
