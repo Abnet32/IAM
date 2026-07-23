@@ -1,64 +1,76 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo, useSyncExternalStore } from "react"
-import { useTheme } from "next-themes"
-import { toast } from "sonner"
-import { useAuthStore } from "@/src/store"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Sun, Moon, Laptop, Save, Check } from "lucide-react"
+import { useState, useCallback, useMemo, useSyncExternalStore } from "react";
+import { useTheme } from "next-themes";
+import { toast } from "sonner";
+import { useAuthStore } from "@/src/store";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Sun, Moon, Laptop, Save, Check } from "lucide-react";
 
-const emptySubscribe = () => () => {}
+const emptySubscribe = () => () => {};
 
 export default function SettingsPage() {
-  const { theme, setTheme } = useTheme()
-  const { user, token } = useAuthStore()
-  const [name, setName] = useState("Admin")
-  const [email, setEmail] = useState(user?.email ?? "admin@infnova.tech")
-  const [saved, setSaved] = useState(false)
+  const { theme, setTheme } = useTheme();
+  const { user, token } = useAuthStore();
+  const [name, setName] = useState(user?.fullName ?? "Admin");
+  const [email, setEmail] = useState(user?.email ?? "admin@infnova.tech");
+  const [saved, setSaved] = useState(false);
 
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
     () => false,
-  )
+  );
 
   const isDirty = useMemo(
     () => name !== "Admin" || email !== (user?.email ?? "admin@infnova.tech"),
     [name, email, user],
-  )
+  );
 
   const handleSave = useCallback(() => {
-    if (!token) return
-    useAuthStore.getState().setAuth(token, { fullName: name, email })
-    setSaved(true)
-    toast.success("Settings saved")
-    setTimeout(() => setSaved(false), 2000)
-  }, [token, name, email])
+    if (!token) return;
+    useAuthStore.getState().setAuth(token, { fullName: name, email });
+    setSaved(true);
+    toast.success("Settings saved");
+    setTimeout(() => setSaved(false), 2000);
+  }, [token, name, email]);
 
   const handleCancel = useCallback(() => {
-    setName("Admin")
-    setEmail(user?.email ?? "admin@infnova.tech")
-  }, [user])
+    setName(user?.fullName ?? "Admin");
+    setEmail(user?.email ?? "admin@infnova.tech");
+  }, [user]);
 
   return (
     <div className="space-y-6 max-w-2xl page-enter">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage your account and preferences</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Manage your account and preferences
+        </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-semibold">Profile</CardTitle>
-          <CardDescription className="text-xs">Your account information</CardDescription>
+          <CardDescription className="text-xs">
+            Your account information
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-2">
-            <Label htmlFor="name" className="text-sm font-medium">Display Name</Label>
+            <Label htmlFor="name" className="text-sm font-medium">
+              Display Name
+            </Label>
             <Input
               id="name"
               value={name}
@@ -67,7 +79,9 @@ export default function SettingsPage() {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+            <Label htmlFor="email" className="text-sm font-medium">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -78,10 +92,21 @@ export default function SettingsPage() {
           </div>
           <Separator />
           <div className="flex items-center gap-2 justify-end">
-            <Button variant="outline" size="sm" className="font-medium" onClick={handleCancel} disabled={!isDirty}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="font-medium"
+              onClick={handleCancel}
+              disabled={!isDirty}
+            >
               Cancel
             </Button>
-            <Button size="sm" className="font-medium" onClick={handleSave} disabled={!isDirty}>
+            <Button
+              size="sm"
+              className="font-medium"
+              onClick={handleSave}
+              disabled={!isDirty}
+            >
               {saved ? (
                 <span className="flex items-center gap-1.5">
                   <Check className="size-3.5" />
@@ -101,7 +126,9 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-semibold">Appearance</CardTitle>
-          <CardDescription className="text-xs">Customize the look and feel</CardDescription>
+          <CardDescription className="text-xs">
+            Customize the look and feel
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {mounted ? (
@@ -144,5 +171,5 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

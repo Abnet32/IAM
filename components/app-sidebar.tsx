@@ -66,7 +66,7 @@ export function AppSidebar() {
           .join("")
           .toUpperCase()
       : "A";
-  const displayName = "Admin";
+  const displayName = hydrated && user?.fullName ? user.fullName : "Admin";
   const displayEmail =
     hydrated && user?.email ? user.email : "admin@infnova.tech";
 
