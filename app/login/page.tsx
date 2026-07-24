@@ -107,13 +107,7 @@ export default function LoginPage() {
                 <Label htmlFor="password" className="text-sm font-medium">
                   Password
                 </Label>
-                <button
-                  type="button"
-                  className="text-xs text-primary hover:underline"
-                  tabIndex={-1}
-                >
-                  Forgot password?
-                </button>
+              
               </div>
               <div className="relative">
                 <Input
