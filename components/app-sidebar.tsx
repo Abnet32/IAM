@@ -13,7 +13,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -104,7 +103,7 @@ export function AppSidebar() {
                       render={<Link href={item.url} onClick={handleNav} />}
                       className="h-10 px-3 text-[13px] font-medium transition-colors"
                     >
-                      <Icon className="size-[18px]" />
+                      <Icon className="size-4.5" />
                       <span>{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
