@@ -78,7 +78,7 @@ export function HiringPipelineCard({
           <Skeleton className="h-4 w-36" />
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-[280px] w-full" />
+          <Skeleton className="h-70 w-full" />
         </CardContent>
       </Card>
     )
