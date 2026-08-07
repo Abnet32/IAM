@@ -76,7 +76,7 @@ export default function LoginPage() {
             </div>
             <h1 className="text-2xl font-bold tracking-tight">Sign in</h1>
             <p className="text-sm text-muted-foreground">
-              Enter your credentia
+              Enter your credentials to access the dashboard
             </p>
           </div>
 
